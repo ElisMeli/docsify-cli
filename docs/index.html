@@ -1,21 +1,135 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>docsify-cli - A magical documentation generator.</title>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta name="description" content="A magical documentation generator.">
+  <title>Performance Custos LM</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify/themes/vue.css">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="description" content="Documentação do projeto de Monitoramento de Rotas LM">
+  
+  <!-- Fonte Montserrat -->
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500&display=swap" rel="stylesheet">
+
+  <!-- Tema escuro padrão Docsify -->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+
+  <style>
+    body {
+      font-family: 'Montserrat', Arial, sans-serif;
+      background: #242f36 !important;
+      color: #e6ecf1 !important;
+      font-size: 15px !important;
+    }
+
+    .sidebar, .sidebar ul, .sidebar-toggle {
+      background: #202b31 !important;
+      color: #e6ecf1 !important;
+    }
+
+    .sidebar .app-name {
+      font-family: 'Montserrat', Arial, sans-serif;
+      font-weight: 500;
+      font-size: 1.13rem !important;
+      color: #33c7b1 !important;
+      margin-bottom: 18px;
+      line-height: 1.1;
+      text-align: center;
+      white-space: pre-line;
+      padding-top: 15px;
+      padding-bottom: 12px;
+      letter-spacing: -1px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 92px;
+    }
+
+    .sidebar .app-name span {
+      display: block;
+    }
+
+    .sidebar ul li a {
+      color: #e6ecf1 !important;
+      font-size: 0.97rem !important;
+      font-weight: 400 !important;
+      text-align: left;
+      margin-left: 0 !important;
+    }
+
+    .sidebar-nav > ul > li > a.active {
+      font-weight: 700 !important;
+      color: #fff !important;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Montserrat', Arial, sans-serif;
+      font-weight: 500 !important;
+      color: #e6ecf1 !important;
+      letter-spacing: -0.5px;
+    }
+
+    h1 { font-size: 2.1rem !important; }
+    h2 { font-size: 1.6rem !important; }
+
+    .content, .markdown-section p {
+      color: #e6ecf1 !important;
+      font-size: 1.07rem;
+    }
+
+    .markdown-section strong { color: #fff; }
+    a, .sidebar-nav a { color: #33c7b1 !important; }
+
+    .sidebar-nav .app-sub-sidebar-toggle {
+      color: #33c7b1 !important;
+      font-size: 1.18em !important;
+    }
+
+    section.cover {
+      display: none !important;
+      height: 0 !important;
+      background: none !important;
+    }
+
+    .markdown-section code {
+      background-color: #33414a !important;
+      color: #e6ecf1 !important;
+      padding: 0.2em 0.4em !important;
+      border-radius: 4px !important;
+    }
+
+    .markdown-section table td,
+    .markdown-section table td p,
+    .markdown-section table td span,
+    .markdown-section table td * {
+      color: #e6ecf1 !important;
+    }
+
+    .markdown-section hr {
+      border: none;
+      border-top: 1px solid #5a5f63;
+      margin: 24px 0;
+    }
+
+    /* ✅ Corrige o fundo branco da linha zebra */
+    .markdown-section table tr:nth-child(even) {
+      background-color: transparent !important;
+    }
+  </style>
 </head>
 <body>
   <div id="app"></div>
   <script>
     window.$docsify = {
-      name: 'docsify-cli',
-      repo: 'docsifyjs/docsify-cli'
+      name: '<span>Performance de Custos<br>Last Mile</span>',
+      repo: '',
+      loadSidebar: true,
+      auto2top: true,
+      coverpage: false,
+      subMaxLevel: 2
     }
   </script>
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/docsify.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
 </body>
 </html>
+
