@@ -21,8 +21,8 @@ Criar uma base de referência para mapear as cidades de origem (com estado) de c
 
 📐 **Transformações e Seleções:**
 
-| :center:**Coluna no Input**: | :center:**Coluna no Output**: | :center:**Descrição**: |
-| :-------------------------: | :--------------------------: | :---------------------: |
+| **Coluna no Input**|**Coluna no Output**|**Descrição**                                       |
+| :-------------------------: | :--------------------------: | :---------------------:         |
 | `SHP_FACILITY_ID`           | `SHP_FACILITY_ID`            | Identificador do Service Center |
 | `SHP_CITY_NAME`             | `CIDADE_ORIGEM`              | Nome da cidade onde está localizado o SVC |
 | `SHP_STATE_ID`              | `SHP_STATE_ID`               | Sigla do estado do Service Center |
