@@ -12,6 +12,8 @@ Criar uma base de referência para mapear as cidades de origem (com estado) de c
 
 **Tabela:** `meli-bi-data.WHOWNER.LK_SHP_FACILITIES`
 
+**Descrição:** Contém a base de facilities (Service Centers) do site MLB, com informações de localização (cidade, estado) utilizadas para rastreio `MLB`.
+
 **Filtro aplicado:**
 `WHERE SHP_SITE_ID = 'MLB'`
 
@@ -19,12 +21,11 @@ Criar uma base de referência para mapear as cidades de origem (com estado) de c
 
 📐 **Transformações e Seleções:**
 
-| **Coluna no output**            | **Descrição**                                           |
-| :---------------------------- | :---------------------------------------------------- |
-| `SHP_FACILITY_ID`             | Identificador do Service Center                       |
-| `CIDADE_ORIGEM`-`SHP_CITY_NAME` | Nome da cidade onde está localizado o Service Center |
-| `SHP_STATE_ID`                | Sigla do estado do Service Center                     |
-
+| :center:**Coluna no Input**: | :center:**Coluna no Output**: | :center:**Descrição**: |
+| :-------------------------: | :--------------------------: | :---------------------: |
+| `SHP_FACILITY_ID`           | `SHP_FACILITY_ID`            | Identificador do Service Center |
+| `SHP_CITY_NAME`             | `CIDADE_ORIGEM`              | Nome da cidade onde está localizado o SVC |
+| `SHP_STATE_ID`              | `SHP_STATE_ID`               | Sigla do estado do Service Center |
 
 ---------------------------------------------------------------------------------------------------
 **🔁 Joins e Multiplicadores:**
