@@ -130,6 +130,15 @@
     }
   </script>
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+  <!-- Desabilitar clique no título da sidebar -->
+  <script>
+    window.onload = function() {
+      var brand = document.querySelector('.app-name');
+      if (brand) {
+        brand.style.pointerEvents = 'none';
+        brand.style.cursor = 'default';
+      }
+    };
+  </script>
 </body>
 </html>
-
