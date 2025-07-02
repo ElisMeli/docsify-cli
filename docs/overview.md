@@ -32,3 +32,7 @@ Thaise Tavares
 ---
 
 > Para dúvidas, sugestões ou solicitações de ajuste, entre em contato por e-mail ou pelo Chat.
+
+---git add docs/overview.md
+---git commit -m "Inclui nova página Visão Geral (overview.md)"
+---git push origin master
