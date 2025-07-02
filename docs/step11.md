@@ -1,4 +1,4 @@
-### Step 11 – Budget Rotas
+### Step 11 - Budget Rotas
 
 🔹 Step 11 – `LK_BUDGET_ROTAS_LM_CUSTOS`
 
@@ -13,6 +13,8 @@ Importar a base de metas orçamentárias logísticas para 2025, contendo indicad
 **Tabela utilizada:**
 - `meli-bi-data.SBOX_MLB_FORECASTING.MLB_RTG_BUDGET_LM_TARGETS_2025`
 
+**Descrição:** Traz o planejamento logístico orçamentário para o ano de 2025, detalhando volumes, rotas, custos e metas por unidade, modal e ciclo.
+
 **Filtro aplicado:**
 - *Nenhum filtro foi aplicado neste step.*
 
@@ -20,18 +22,18 @@ Importar a base de metas orçamentárias logísticas para 2025, contendo indicad
 
 📐 **Transformações e Seleções:**
 
-| *Coluna no output*    | *Descrição*                                                             |
-| :-------------------- | :---------------------------------------------------------------------- |
-| `PERIOD_YEAR_MONTH`   | Período no formato `YYYYMM`                                             |
-| `FACILITY_ID`         | Unidade logística (SVC)                                                 |
-| `MODAL`               | Modal logístico associado ao budget                                     |
-| `CICLO_OPERATIVO`     | Ciclo da operação (ex: semanal, mensal, PM, SD)                         |
-| `ROUTE_TOTAL`         | Quantidade total de rotas planejadas no período                         |
-| `UNIT_TOTAL`          | Quantidade total de pacotes previstas                                   |
-| `COST_VALUE`          | Valor total orçado (budget) em reais para o período e contexto          |
-| `SPR_BUDGET`          | Shipments por rota planejado (`SPR`)                                    |
-| `CPR_BUDGET`          | Custo por rota planejado (`CPR`)                                        |
-| `CPS_BUDGET`          | Custo por shipment planejado (`CPS`)                                    |
+| **Coluna no Input**      | **Coluna no Output**   | **Descrição**                                                    |
+| :-----------------------:| :--------------------: | :--------------------------------------------------------------: |
+| `PERIOD_YEAR_MONTH`      | `PERIOD_YEAR_MONTH`    | Período no formato `YYYYMM`                                      |
+| `FACILITY_ID`            | `SHP_FACILITY_ID`      | Unidade logística (SVC)                                          |
+| `MODAL`                  | `MODAL`                | Modal logístico associado ao budget                              |
+| `CICLO_OPERATIVO`        | `CICLO_OPERATIVO`      | Ciclo operacional (PM, SD, semanal, etc.)                        |
+| `ROUTE_TOTAL`            | `ROUTE_TOTAL`          | Quantidade total de rotas planejadas no período                  |
+| `UNIT_TOTAL`             | `UNIT_TOTAL`           | Quantidade total de pacotes previstas                            |
+| `COST_VALUE`             | `COST_VALUE`           | Valor total orçado (budget) em reais                             |
+| `SPR_2025`               | `SPR_BUDGET`           | Shipments por rota planejado (`SPR`)                             |
+| `CPR_2025`               | `CPR_BUDGET`           | Custo por rota planejado (`CPR`)                                 |
+| `CPS_2025`               | `CPS_BUDGET`           | Custo por shipment planejado (`CPS`)                             |
 
 ---
 
@@ -46,19 +48,21 @@ Multiplicadores: *Não há aplicação de multiplicadores neste step.*
 📋 **Regras de Negócio Implícitas:**
 
 - Os valores orçamentários são definidos por combinação de `FACILITY`, `MODAL` e `CICLO_OPERATIVO`.
-- Os indicadores `SPR`, `CPR` e `CPS` representam metas derivadas da previsão de pacotes e custo total.
+- Indicadores `SPR`, `CPR` e `CPS` são calculados previamente pela área de planejamento como metas para cada contexto.
 
 ---
 
 🔍 **Considerações técnicas:**
 
-- A criação da tabela é feita com `CREATE OR REPLACE TABLE`, sobrescrevendo a `STG.LK_BUDGET_ROTAS_LM_CUSTOS`.
-- Os dados são importados de uma tabela de planejamento, e não há transformações nem filtros aplicados.
+- Criação com `CREATE OR REPLACE TABLE`, sobrescrevendo a `STG.LK_BUDGET_ROTAS_LM_CUSTOS`.
+- Sem transformações adicionais, garantindo a fidelidade do dado de planejamento.
 
 ---
 
 ⚠️ **Pontos de atenção:**
 
-- Certifique-se de que os nomes de MODAL e FACILITY estejam padronizados para que os joins com execuções funcionem corretamente.
-- Indicadores como `SPR_BUDGET`, `CPR_BUDGET` e `CPS_BUDGET` são sensíveis à consistência entre pacotes, rotas e valores.
-- Ciclos como `PM` e `SD` precisam estar em conformidade com os ciclos atribuídos nas tabelas de execução.
+- Garanta que os nomes de `MODAL` e `FACILITY` estejam padronizados para que os joins com execuções funcionem corretamente.
+- Indicadores `SPR_BUDGET`, `CPR_BUDGET` e `CPS_BUDGET` são sensíveis à consistência entre pacotes, rotas e valores.
+- Ciclos como `PM` e `SD` devem estar alinhados ao ciclo atribuído nas tabelas de execução para análises consistentes.
+
+---
