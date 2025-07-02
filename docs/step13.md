@@ -1,10 +1,10 @@
-### Step 13 – Base Coeficiente Complementar
+### Step 13 - Base Coeficiente Complementar
 
 🔹 Step 13 – `LK_BASE_COEFICIENTE_COMPLEMENTAR_CUSTOS`
 
 ✅ **Objetivo:**
 
-Construir uma base com coeficientes comparativos entre custos regulares e complementares, além de cálculos específicos para veículos alugados. Essa base consolida indicadores financeiros por período, úteis para ajustes de modelagem orçamentária.
+Construir uma base com coeficientes comparativos entre custos regulares e complementares, além de cálculos específicos para veículos alugados, consolidando indicadores financeiros por período para ajustes de modelagem orçamentária.
 
 ---
 
@@ -14,6 +14,8 @@ Construir uma base com coeficientes comparativos entre custos regulares e comple
 - `meli-bi-data.WHOWNER.BT_SHP_LG_PRE_INVOICE_DETAIL`
 - `meli-bi-data.WHOWNER.BT_SHP_LG_PRE_INVOICE_ROUTES`
 - `meli-bi-data.WHOWNER.BT_SHP_LG_PRE_INVOICE_HEADER`
+
+**Descrição:** Essas tabelas armazenam detalhes de pré-faturamento, rotas e cabeçalhos de cobrança logística para análises de custos por tipo de operação.
 
 **Filtros aplicados:**
 - `SIT_SITE_ID = 'MLB'`
@@ -26,47 +28,47 @@ Construir uma base com coeficientes comparativos entre custos regulares e comple
 
 📐 **Transformações e Seleções:**
 
-| *Coluna no output*         | *Descrição*                                                                 |
-| :--------------------------| :--------------------------------------------------------------------------- |
-| `PERIODO`                  | Período de referência (`SHP_LG_PRE_INVOICE_HEADER_PERIOD_NAME`)              |
-| `PRODUCT`                  | Tipo de produto ajustado (ex: `logistics`)                                   |
-| `RENTALS_COMP_COST`        | Custo com veículos alugados em dias úteis (`Rentals Costs - WORKING DAY`)    |
-| `RENTALS_REGULAR_COST`     | Custo total das rotas de veículos alugados com tipos específicos             |
-| `RENT_COEF`                | Coeficiente de aluguel (`RENTALS_COMP_COST / RENTALS_REGULAR_COST`)          |
-| `COMP_COST`                | Custo total de pré-faturas complementares no período                         |
-| `REG_COST`                 | Custo total de pré-faturas regulares no período                              |
-| `COEF`                     | Coeficiente geral (`COMP_COST / REG_COST`)                                   |
-| `TOTAL_COST`               | Soma total de custos no período (complementar + regular)                     |
+| **Coluna no Input**               | **Coluna no Output**               | **Descrição**                                                         |
+| :--------------------------------:| :---------------------------------:| :---------------------------------------------------------------------|
+| `SHP_LG_PRE_INVOICE_HEADER_PERIOD_NAME` | `PERIODO`                  | Período de referência (mês/ano)                                       |
+| `SHP_LG_PRODUCT_TYPE`             | `PRODUCT`                          | Tipo de produto ajustado (ex: `logistics`)                            |
+| Calculado                          | `RENTALS_COMP_COST`                | Custo com veículos alugados em dias úteis                             |
+| Calculado                          | `RENTALS_REGULAR_COST`             | Custo total de rotas de veículos alugados                             |
+| Calculado                          | `RENT_COEF`                        | Coeficiente aluguel (`RENTALS_COMP_COST / RENTALS_REGULAR_COST`)      |
+| Calculado                          | `COMP_COST`                        | Custo total de pré-faturas complementares                             |
+| Calculado                          | `REG_COST`                         | Custo total de pré-faturas regulares                                  |
+| Calculado                          | `COEF`                             | Coeficiente geral (`COMP_COST / REG_COST`)                            |
+| Calculado                          | `TOTAL_COST`                       | Custo total do período (complementar + regular)                       |
 
 ---
 
 🔁 **Joins e Multiplicadores:**
 
-Joins: *Executados para cruzar os custos por período entre pré-faturas (`HEADER`), detalhes (`DETAIL`) e rotas (`ROUTES`).*
+Joins: *Executados entre `DETAIL`, `ROUTES` e `HEADER` para consolidar custos por período.*
 
-Multiplicadores: *Não há aplicação explícita de multiplicadores neste step, mas os coeficientes são frações entre custos complementares e regulares.*
+Multiplicadores: *Os coeficientes resultam da divisão entre custos complementares e regulares.*
 
 ---
 
 📋 **Regras de Negócio Implícitas:**
 
-- Custo `complementar` e `regular` são segregados com base no campo `SHP_LG_PRE_INVOICE_HEADER_TYPE`.
-- O campo `PRODUCT` é ajustado: se `place`, então substituído por `logistics`.
-- Apenas registros com custo total positivo e fora de cancelamento são considerados.
-- São consideradas apenas linhas do step `last_mile` e produtos não `crowd`.
+- `PRODUCT` é substituído de `place` para `logistics`.
+- Apenas registros com valores positivos e fora de cancelamentos são considerados.
+- Filtra apenas `step_type = 'last_mile'` e `product_type <> 'crowd'`.
+- Coeficientes são calculados para monitorar custos complementares e regulares no período.
 
 ---
 
 🔍 **Considerações técnicas:**
 
-- A base aplica agregações por período, produto e site.
-- O cálculo final usa `LIMIT 1 ORDER BY PERIODO DESC` para trazer apenas o registro mais recente.
-- A tabela `STG.LK_BASE_COEFICIENTE_COMPLEMENTAR_CUSTOS` é sobrescrita a cada execução com `CREATE OR REPLACE`.
+- Criação com `CREATE OR REPLACE TABLE`, sobrescrevendo `STG.LK_BASE_COEFICIENTE_COMPLEMENTAR_CUSTOS`.
+- Aplica agregações por período, site e produto.
+- O `LIMIT 1 ORDER BY PERIODO DESC` garante trazer apenas o último período disponível.
 
 ---
 
 ⚠️ **Pontos de atenção:**
 
-- O uso de `LIMIT 1` retorna apenas o último período — se o objetivo for série histórica, essa limitação deve ser removida.
-- Os cálculos de coeficiente são sensíveis à ausência de registros em qualquer uma das partes (REG ou COMP).
-- Verifique se todos os tipos de veículos alugados estão atualizados no filtro do bloco `REGRENT`.
+- A ausência de registros em `REG` ou `COMP` impacta os coeficientes.
+
+---
