@@ -1,10 +1,10 @@
-### Step 15 – Base Rateio M1
+### Step 15 - Base Rateio M1
 
 🔹 Step 15 – `LK_BASE_RATEIO_M1_CUSTOS`
 
 ✅ **Objetivo:**
 
-Construir uma base com o percentual de rateio da jornada entre o trecho Last Mile (`lm_orh_new`) e o trecho First Mile (`fm_orh_new`) dentro do modelo MeliOne. Esse percentual é usado para distribuir corretamente os custos compartilhados entre os trechos da rota.
+Construir uma base com o percentual de rateio da jornada entre o trecho Last Mile (`lm_orh_new`) e o trecho First Mile (`fm_orh_new`) no modelo MeliOne, utilizado para distribuir corretamente os custos compartilhados entre os trechos da rota.
 
 ---
 
@@ -13,47 +13,50 @@ Construir uma base com o percentual de rateio da jornada entre o trecho Last Mil
 **Tabela utilizada:**
 - `meli-bi-data.SBOX_MELIONEMLB.MeliOne_new`
 
+**Descrição:** Tabela que consolida jornadas do modelo MeliOne, contendo as durações de First Mile e Last Mile para cálculo de rateio de custos.
+
 **Filtro aplicado:**
-- `INICIO_ENTREGAS` entre `'2025-01-01'` e `'2025-12-31'`
+- `INICIO_ENTREGAS` entre `'2025-01-01'` e `'2025-12-31'`.
 
 ---
 
 📐 **Transformações e Seleções:**
 
-| *Coluna no output* | *Descrição*                                                                 |
-| :------------------| :-------------------------------------------------------------------------- |
-| `lm_route_id`       | Identificador da rota logística Last Mile                                  |
-| `fm_orh_new`        | Duração da jornada no trecho First Mile (ORH)                              |
-| `lm_orh_new`        | Duração da jornada no trecho Last Mile (ORH)                               |
-| `PERC_LM`           | Percentual do trecho LM sobre a jornada total (`lm_orh_new / total`)       |
+| **Coluna no Input** | **Coluna no Output** | **Descrição**                                                          |
+| :------------------:| :-------------------:| :--------------------------------------------------------------------- |
+| `lm_route_id`       | `lm_route_id`        | Identificador da rota logística Last Mile                              |
+| `fm_orh_new`        | `fm_orh_new`         | Duração da jornada First Mile (ORH)                                    |
+| `lm_orh_new`        | `lm_orh_new`         | Duração da jornada Last Mile (ORH)                                     |
+| Calculado           | `PERC_LM`            | Percentual de LM sobre jornada total (`lm_orh_new / (fm_orh_new + lm_orh_new)`) |
 
 ---
 
 🔁 **Joins e Multiplicadores:**
 
-Joins: *Não há joins neste step. A base já contém os valores necessários para o cálculo direto.*
+Joins: *Não há joins neste step. A base já contém os campos necessários para cálculo direto.*
 
-Multiplicadores: *Não há multiplicadores aplicados. A divisão é usada apenas para cálculo proporcional.*
+Multiplicadores: *Não aplicados; a divisão serve apenas para cálculo do percentual.*
 
 ---
 
 📋 **Regras de Negócio Implícitas:**
 
-- Quando `lm_orh_new` é nulo, o percentual é considerado 0.
-- Quando `fm_orh_new` é nulo, o percentual é 100% LM.
-- A função `SAFE_DIVIDE()` evita erro em divisões por zero.
+- Se `lm_orh_new` for nulo, o percentual será `0`.
+- Se `fm_orh_new` for nulo, o percentual será `100%` (ou seja, `1`).
+- O cálculo utiliza `SAFE_DIVIDE` para evitar erros de divisão por zero.
 
 ---
 
 🔍 **Considerações técnicas:**
 
-- A tabela `STG.LK_BASE_RATEIO_M1_CUSTOS` é criada com `CREATE OR REPLACE TABLE`, sobrescrevendo a anterior.
-- Os campos `lm_orh_new` e `fm_orh_new` representam as horas trabalhadas em cada trecho.
-- A granularidade é por `lm_route_id`.
+- Criação via `CREATE OR REPLACE TABLE`, sobrescrevendo `STG.LK_BASE_RATEIO_M1_CUSTOS`.
+- Granularidade por `lm_route_id`.
+- Campos de jornada representam horas trabalhadas em cada trecho (FM e LM).
 
 ---
 
 ⚠️ **Pontos de atenção:**
 
-- O percentual `PERC_LM` pode distorcer a alocação de custos se os dados de `fm_orh_new` ou `lm_orh_new` estiverem ausentes ou incorretos.
-- Certifique-se de que os campos de horas estejam preenchidos e consistentes para todas as rotas válidas.
+- Garantir consistência de preenchimento das horas para rotas válidas antes de análises.
+
+---
