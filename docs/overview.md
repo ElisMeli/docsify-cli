@@ -31,4 +31,4 @@ Thaise Tavares
 
 ---
 
-> Para dúvidas, sugestões ou solicitações de ajuste, entre em contato por e-mail.
+> Para dúvidas, sugestões ou solicitações de ajuste, entre em contato por e-mail ou pelo Chat.
