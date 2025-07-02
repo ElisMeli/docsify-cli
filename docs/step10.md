@@ -1,10 +1,10 @@
-### Step 10 – Modal Rotas LM
+### Step 10 - Modal Rotas LM
 
 🔹 Step 10 – `LK_MODAL_ROTAS_LM_CUSTOS`
 
 ✅ **Objetivo:**
 
-Classificar cada rota com seu respectivo `MODAL`, `CANAL` e `PRODUCT` a partir de um mapeamento de veículo, canal e tipo de produto, com base nas entregas executadas em 2025. Essa base define a estrutura modal da malha logística utilizada.
+Classificar cada rota com seu respectivo `MODAL`, `CANAL` e `PRODUCT` a partir de um mapeamento de veículo, canal e tipo de produto, utilizando as entregas executadas em 2025. Essa base define a estrutura modal da malha logística utilizada.
 
 ---
 
@@ -15,6 +15,8 @@ Classificar cada rota com seu respectivo `MODAL`, `CANAL` e `PRODUCT` a partir d
 - `meli-bi-data.WHOWNER.LK_SHP_COMPANIES` (`COMP`)
 - `meli-bi-data.SBOX_ANALYTICSLASTMILE.DE_PARA_BUDGET_MODAL_2025` (`d`)
 
+**Descrição:** Traz informações de execução de rotas, detalhes das empresas associadas e o mapeamento modal atualizado para 2025.
+
 **Filtros aplicados:**
 - `LOGS.sit_site_id = 'MLB'`
 - `LOGS.shp_lg_route_status = 'close'`
@@ -24,18 +26,18 @@ Classificar cada rota com seu respectivo `MODAL`, `CANAL` e `PRODUCT` a partir d
 
 📐 **Transformações e Seleções:**
 
-| *Coluna no output*   | *Descrição*                                                                 |
-| :------------------- | :-------------------------------------------------------------------------- |
-| `SHP_LG_ROUTE_ID`    | Identificador da rota logística                                              |
-| `MODAL`              | Modal logístico atribuído à rota (Ex: Van, Moto, Fixa, etc.)                 |
-| `CANAL`              | Canal logístico (Ex: Envios Extra, Kangu Logistics, Agencias, etc.)          |
-| `PRODUCT`            | Tipo de produto ou serviço (Ex: Delivery, Coleta, Logística Reversa, etc.)   |
+| **Coluna no Input** | **Coluna no Output** | **Descrição**                                            |
+| :-----------------: | :------------------: | :------------------------------------------------------: |
+| `SHP_LG_ROUTE_ID`   | `SHP_LG_ROUTE_ID`    | Identificador da rota logística                          |
+| (Derivado de mapeamento) | `MODAL`         | Modal logístico atribuído à rota                         |
+| (Derivado de mapeamento) | `CANAL`         | Canal logístico vinculado à operação da rota             |
+| (Derivado de mapeamento) | `PRODUCT`       | Tipo de produto ou serviço executado pela rota           |
 
 ---
 
 🔁 **Joins e Multiplicadores:**
 
-Joins: *Realizados joins entre `SHIPMENTS_ROUTES`, `COMPANIES` e o mapeamento modal (`DE_PARA_BUDGET_MODAL_2025`) para derivar as classificações modal, canal e produto.*
+Joins: *Realizados joins entre `SHIPMENTS_ROUTES`, `COMPANIES` e o mapeamento modal (`DE_PARA_BUDGET_MODAL_2025`) para derivar as classificações de modal, canal e produto.*
 
 Multiplicadores: *Não há aplicação de multiplicadores neste step.*
 
@@ -43,21 +45,23 @@ Multiplicadores: *Não há aplicação de multiplicadores neste step.*
 
 📋 **Regras de Negócio Implícitas:**
 
-- A correspondência entre `SHP_LG_VEHICLE_TYPE` e os campos `DE`, `CANAL` e `PRODUCT` é baseada na lógica do `DE_PARA_BUDGET_MODAL_2025`.
-- Para canais `Envios Extra` e `Kangu Logistics`, a associação exige correspondência exata do `shp_company_name`.
-- A seleção do registro é feita com `ROW_NUMBER()` para garantir uma única combinação por rota (`RN = 1`).
+- O campo `DE` no `DE_PARA_BUDGET_MODAL_2025` é utilizado para mapear o `SHP_LG_VEHICLE_TYPE` e atribuir os campos `MODAL`, `CANAL` e `PRODUCT`.
+- Para os canais `Envios Extra` e `Kangu Logistics`, é necessário o match exato no `shp_company_name` para associação.
+- Deduplicação realizada via `ROW_NUMBER()` garantindo apenas um registro por rota.
 
 ---
 
 🔍 **Considerações técnicas:**
 
-- A criação da tabela é feita com `CREATE OR REPLACE TABLE`, sobrescrevendo `STG.LK_MODAL_ROTAS_LM_CUSTOS`.
-- A granularidade da base é por `SHP_LG_ROUTE_ID`, com as colunas `MODAL`, `CANAL` e `PRODUCT` associadas.
+- Criação realizada com `CREATE OR REPLACE TABLE`, sobrescrevendo a `STG.LK_MODAL_ROTAS_LM_CUSTOS`.
+- Granularidade por `SHP_LG_ROUTE_ID`, garantindo as colunas `MODAL`, `CANAL` e `PRODUCT` associadas.
 
 ---
 
 ⚠️ **Pontos de atenção:**
 
-- É fundamental que o mapeamento da tabela `DE_PARA_BUDGET_MODAL_2025` esteja atualizado para evitar classificações incompletas.
-- A lógica condicional dos joins pode deixar algumas rotas sem MODAL caso não haja correspondência nos critérios.
-- A deduplicação por `ROW_NUMBER()` assume que há apenas uma linha prioritária por rota — divergências devem ser analisadas.
+- A base de mapeamento `DE_PARA_BUDGET_MODAL_2025` deve estar atualizada para garantir a classificação correta das rotas.
+- Em caso de inconsistências ou ausência de match nos critérios, a rota pode ficar sem `MODAL`.
+- A deduplicação via `ROW_NUMBER()` assume que há apenas um match prioritário por rota.
+
+---
