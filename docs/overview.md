@@ -2,7 +2,7 @@
 
 ---
 
-**Tabela de Consulta:**  
+**Tabela de Consumo:**  
 `meli-bi-data.WHOWNER.BT_BASEROTASLM_CUSTOS`
 
 **Nome do Projeto:**  
