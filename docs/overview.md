@@ -14,6 +14,18 @@ Consolidar e disponibilizar informações operacionais, logísticas, financeiras
 **Frequência de Atualização:**  
 Diária (via agendamento no Dataflow)
 
+**Frequência de Execução:**  
+O processo roda diariamente em múltiplos horários (UTC), convertidos para o horário de Brasília (GMT-3):
+
+- `01:05` UTC → `22:05` (do dia anterior)
+- `04:05` UTC → `01:05`
+- `07:05` UTC → `04:05`
+- `10:05` UTC → `07:05`
+- `13:04` UTC → `10:04`
+- `16:05` UTC → `13:05`
+- `19:05` UTC → `16:05`
+- `21:05` UTC → `18:05`
+
 **Tipo de Atualização:**  
 Automática (Data Suite)
 
@@ -33,6 +45,4 @@ Thaise Tavares
 
 > Para dúvidas, sugestões ou solicitações de ajuste, entre em contato por e-mail ou pelo Chat.
 
----git add docs/overview.md
----git commit -m "Inclui nova página Visão Geral (overview.md)"
----git push origin master
+
