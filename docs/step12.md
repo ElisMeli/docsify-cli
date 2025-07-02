@@ -1,4 +1,4 @@
-### Step 12 – Buffer Status
+### Step 12 - Buffer Status
 
 🔹 Step 12 – `LK_SHIPMENT_BUFFER_STATUS_CUSTOS`
 
@@ -13,7 +13,9 @@ Identificar se um pacote (`SHIPMENT_ID`) possui opção de entrega do tipo `buff
 **Tabela utilizada:**
 - `meli-bi-data.SHIPPING_BI.BT_SHP_MT_SHIPMENT_SNAPSHOT`
 
-**Filtros aplicados:**
+**Descrição:** Contém snapshots diários dos pacotes, com informações de opções de entrega (`DELIVERY_OPTIONS`), status e dados de roteirização.
+
+**Filtro aplicado:**
 - `SITE_ID = 'MLB'`
 - `SNAPSHOT_DATE_CREATED BETWEEN '2025-01-01' AND '2025-12-31'`
 
@@ -21,16 +23,16 @@ Identificar se um pacote (`SHIPMENT_ID`) possui opção de entrega do tipo `buff
 
 📐 **Transformações e Seleções:**
 
-| *Coluna no output* | *Descrição*                                                                    |
-| :------------------| :------------------------------------------------------------------------------ |
-| `SHIPMENT_ID`       | Identificador único do pacote                                                   |
-| `buff_flag`         | Flag booleano indicando se há ao menos uma `DELIVERY_OPTION` do tipo `buffered` |
+| **Coluna no Input** | **Coluna no Output** | **Descrição**                                                         |
+| :------------------:| :-------------------:| :--------------------------------------------------------------------:|
+| `SHIPMENT_ID`       | `SHIPMENT_ID`        | Identificador único do pacote                                         |
+| `DELIVERY_OPTIONS`  | `buff_flag`          | Flag booleano indicando se há ao menos uma opção do tipo `buffered`   |
 
 ---
 
 🔁 **Joins e Multiplicadores:**
 
-Joins: *Não há joins externos neste step. A lógica se baseia na estrutura interna da coluna aninhada `DELIVERY_OPTIONS`.*
+Joins: *Não há joins externos neste step. A análise é feita diretamente via `UNNEST()` na coluna `DELIVERY_OPTIONS`.*
 
 Multiplicadores: *Não há aplicação de multiplicadores neste step.*
 
@@ -38,21 +40,23 @@ Multiplicadores: *Não há aplicação de multiplicadores neste step.*
 
 📋 **Regras de Negócio Implícitas:**
 
-- A condição `TYPE = 'buffered'` dentro do array `DELIVERY_OPTIONS` indica elegibilidade ao modelo de entrega com buffer.
-- A flag `buff_flag` é atribuída como `TRUE` se **ao menos uma** opção `buffered` estiver presente para o `SHIPMENT_ID`.
+- `buff_flag = TRUE` é atribuído quando pelo menos uma `DELIVERY_OPTION` do tipo `'buffered'` está presente para o `SHIPMENT_ID`.
+- Pacotes sem opções de entrega listadas não são considerados como `buffered`.
 
 ---
 
 🔍 **Considerações técnicas:**
 
-- A tabela utiliza `UNNEST()` sobre o array `DELIVERY_OPTIONS` para analisar os tipos de entrega vinculados ao pacote.
-- A criação é feita com `CREATE OR REPLACE TABLE`, sobrescrevendo `STG.LK_SHIPMENT_BUFFER_STATUS_CUSTOS`.
-- A lógica de filtro é reforçada com `QUALIFY` para garantir que apenas pacotes com `buffered` de fato entrem no resultado final.
+- Utiliza `UNNEST()` para expandir o array `DELIVERY_OPTIONS` e verificar a existência do tipo `'buffered'`.
+- Criação com `CREATE OR REPLACE TABLE`, sobrescrevendo a `STG.LK_SHIPMENT_BUFFER_STATUS_CUSTOS`.
+- O uso de `QUALIFY` garante que apenas pacotes com `buffered` de fato componham o resultado final.
 
 ---
 
 ⚠️ **Pontos de atenção:**
 
-- Pacotes sem a estrutura `DELIVERY_OPTIONS` devidamente preenchida podem não ser considerados, mesmo que sejam elegíveis.
-- A granularidade da base é por `SHIPMENT_ID`, com um único valor booleano representando a condição de buffer.
-- A análise considera apenas o snapshot dentro do ano de 2025 — dados fora dessa janela são ignorados.
+- Pacotes sem `DELIVERY_OPTIONS` corretamente preenchidos podem não ser considerados mesmo que sejam elegíveis.
+- A granularidade é por `SHIPMENT_ID`, com o `buff_flag` sendo `TRUE` ou `FALSE`.
+- A análise considera apenas snapshots de 2025 — dados fora dessa janela são descartados.
+
+---
