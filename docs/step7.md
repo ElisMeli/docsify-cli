@@ -1,10 +1,10 @@
-### Step 07 – XPT Rotas LM
+### Step 07 - XPT Rotas LM
 
 🔹 Step 07 – `LK_XPT_ROTAS_LM_CUSTOS`
 
 ✅ **Objetivo:**
 
-Identificar para cada rota o destino XPT (fora do Brasil) ou NEX (nacional) com base no `SHP_LG_DESTINATION_FACILITY_ID`, permitindo categorizações geográficas no fluxo logístico.
+Identificar para cada rota o destino XPT ou NEX com base no `SHP_LG_DESTINATION_FACILITY_ID`, permitindo categorizações geográficas no fluxo logístico.
 
 ---
 
@@ -12,6 +12,8 @@ Identificar para cada rota o destino XPT (fora do Brasil) ou NEX (nacional) com 
 
 **Tabela utilizada:**
 - `meli-bi-data.WHOWNER.BT_SHP_LG_SHIPMENT_CHECKPOINTS`
+
+**Descrição:** Contém checkpoints de pacotes com informações de facility de destino utilizadas para segmentação XPT/NEX.
 
 **Filtros aplicados:**
 - `SHP_LG_SHIPMENT_CHK_DT BETWEEN '2025-01-01' AND '2025-12-31'`
@@ -22,12 +24,11 @@ Identificar para cada rota o destino XPT (fora do Brasil) ou NEX (nacional) com 
 
 📐 **Transformações e Seleções:**
 
-| *Coluna no output*         | *Descrição*                                                                 |
-| :------------------------- | :-------------------------------------------------------------------------- |
-| `SHP_LG_ROUTE_ID`          | Identificador da rota logística                                             |
-| `SHP_LG_FACILITY_ID`       | Facility de origem vinculada à rota                                         |
-| `XPT`                      | Destino internacional (quando `DESTINATION_FACILITY_ID` **não começa com BR**) |
-| `NEX`                      | Destino nacional (quando `DESTINATION_FACILITY_ID` **começa com BR**)        |
+| **Coluna no Input**             | **Coluna no Output** | **Descrição**                                                                  |
+| :-----------------------------: | :------------------: | :----------------------------------------------------------------------------- |
+| `SHP_LG_ROUTE_ID`               | `SHP_LG_ROUTE_ID`   | Identificador da rota logística                                               |
+| `SHP_LG_FACILITY_ID`            | `SHP_FACILITY_ID`   | Facility de origem vinculada à rota                                           |
+| `SHP_LG_DESTINATION_FACILITY_ID`| `XPT` ou `NEX`      | Classificação como destino (XPT) ou(NEX) conforme ID  |
 
 ---
 
@@ -41,20 +42,23 @@ Multiplicadores: *Não há aplicação de multiplicadores neste step.*
 
 📋 **Regras de Negócio Implícitas:**
 
-- A lógica de separação entre `XPT` e `NEX` depende da análise da string `SHP_LG_DESTINATION_FACILITY_ID`.
-- Se o ID começar com `'BR'`, é classificado como `NEX`; caso contrário, como `XPT`.
+- Se `SHP_LG_DESTINATION_FACILITY_ID` começar com `'BR'`, é classificado como `NEX`.
+- Caso contrário, é classificado como `XPT`.
+- Essa separação facilita a segmentação de rotas por tipo de destino.
 
 ---
 
 🔍 **Considerações técnicas:**
 
-- A criação da tabela é feita com `CREATE OR REPLACE TABLE`, sobrescrevendo `STG.LK_XPT_ROTAS_LM_CUSTOS`.
-- O agrupamento final é feito por `SHP_LG_ROUTE_ID`, `SHP_LG_FACILITY_ID` e `SHP_LG_DESTINATION_FACILITY_ID`.
+- Criação com `CREATE OR REPLACE TABLE`, sobrescrevendo a `STG.LK_XPT_ROTAS_LM_CUSTOS`.
+- O agrupamento é feito por `SHP_LG_ROUTE_ID`, `SHP_LG_FACILITY_ID`, `SHP_LG_DESTINATION_FACILITY_ID`.
 
 ---
 
 ⚠️ **Pontos de atenção:**
 
-- Caso o campo `SHP_LG_DESTINATION_FACILITY_ID` esteja em branco, o registro será descartado.
-- Um mesmo `SHP_LG_ROUTE_ID` pode ter múltiplas ocorrências, dependendo da granularidade do destino.
-- Essa base é sensível a inconsistências no preenchimento do código da unidade de destino.
+- Registros com `SHP_LG_DESTINATION_FACILITY_ID` em branco são descartados.
+- Um mesmo `SHP_LG_ROUTE_ID` pode ter múltiplas ocorrências dependendo do destino.
+- A qualidade desta base depende do correto preenchimento dos campos de destino.
+
+---
