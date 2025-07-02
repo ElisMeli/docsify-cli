@@ -22,12 +22,12 @@ Construir uma base com o percentual de rateio da jornada entre o trecho Last Mil
 
 📐 **Transformações e Seleções:**
 
-| **Coluna no Input** | **Coluna no Output** | **Descrição**                                                          |
-| :------------------:| :-------------------:| :--------------------------------------------------------------------- |
-| `lm_route_id`       | `lm_route_id`        | Identificador da rota logística Last Mile                              |
-| `fm_orh_new`        | `fm_orh_new`         | Duração da jornada First Mile (ORH)                                    |
-| `lm_orh_new`        | `lm_orh_new`         | Duração da jornada Last Mile (ORH)                                     |
-| Calculado           | `PERC_LM`            | Percentual de LM sobre jornada total (`lm_orh_new / (fm_orh_new + lm_orh_new)`) |
+| **Coluna no Input** | **Coluna no Output** | **Descrição** |
+| :---: | :---: | :--- |
+| `lm_route_id` | `lm_route_id` | Identificador da rota logística Last Mile |
+| `fm_orh_new` | `fm_orh_new` | Duração da jornada no trecho First Mile (ORH) |
+| `lm_orh_new` | `lm_orh_new` | Duração da jornada no trecho Last Mile (ORH) |
+| Calculado | `PERC_LM` | Percentual do trecho LM sobre a jornada total (`lm_orh_new / total`) |
 
 ---
 
