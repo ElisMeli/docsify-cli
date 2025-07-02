@@ -1,4 +1,4 @@
-### Step 08 – Base Ciclo Rota
+### Step 08 - Base Ciclo Rota
 
 🔹 Step 08 – `LK_CICLO_ROTA_CUSTOS`
 
@@ -13,6 +13,8 @@ Criar uma base de apoio que associa cada rota ao seu respectivo ciclo operaciona
 **Tabela utilizada:**
 - `meli-bi-data.SBOX_CASECENTERMLB.CICLO_ROTA_LM`
 
+**Descrição:** Contém os ciclos operacionais atribuídos por rota, utilizados para segmentação temporal em análises de performance.
+
 **Filtro aplicado:**
 - *Nenhum filtro foi aplicado neste step.*
 
@@ -20,10 +22,10 @@ Criar uma base de apoio que associa cada rota ao seu respectivo ciclo operaciona
 
 📐 **Transformações e Seleções:**
 
-| *Coluna no output*   | *Descrição*                                                        |
-| :------------------- | :----------------------------------------------------------------- |
-| `SHP_LG_ROUTE_ID`    | Identificador da rota logística                                    |
-| `CICLO_OPS`          | Ciclo operacional associado à rota (ex: semana, período ou janela) |
+| **Coluna no Input** | **Coluna no Output** | **Descrição**                                                       |
+| :-----------------: | :------------------: | :-----------------------------------------------------------------: |
+| `SHP_LG_ROUTE_ID`   | `SHP_LG_ROUTE_ID`    | Identificador da rota logística                                     |
+| `CICLO_OPS`         | `CICLO_OPS`          | Ciclo operacional associado à rota (semana, período ou janela)      |
 
 ---
 
@@ -37,19 +39,22 @@ Multiplicadores: *Não há aplicação de multiplicadores neste step.*
 
 📋 **Regras de Negócio Implícitas:**
 
-- O campo `CICLO_OPS` é atribuído a cada `SHP_LG_ROUTE_ID` conforme lógica operacional pré-definida no pipeline upstream.
-- Pode representar semanas logísticas, turnos ou outros agrupadores operacionais usados para análises recorrentes.
+- O campo `CICLO_OPS` é atribuído a cada `SHP_LG_ROUTE_ID` conforme a lógica operacional definida no pipeline de upstream.
+- Pode representar semanas logísticas, turnos ou outros agrupadores operacionais utilizados em análises.
 
 ---
 
 🔍 **Considerações técnicas:**
 
-- A criação é feita com `CREATE OR REPLACE TABLE`, sobrescrevendo a tabela `STG.LK_CICLO_ROTA_CUSTOS`.
-- A granularidade da base é por rota (`SHP_LG_ROUTE_ID`), com uma coluna adicional de agrupamento (`CICLO_OPS`).
+- Criação realizada com `CREATE OR REPLACE TABLE`, sobrescrevendo a tabela `STG.LK_CICLO_ROTA_CUSTOS`.
+- Granularidade por `SHP_LG_ROUTE_ID`, garantindo um ciclo por rota.
 
 ---
 
 ⚠️ **Pontos de atenção:**
 
-- É fundamental que os dados de `CICLO_ROTA_LM` estejam atualizados para garantir a correta vinculação temporal das rotas.
-- Casos em que `CICLO_OPS` esteja nulo podem comprometer a análise de desempenho por ciclo.
+- A atualização correta da base `CICLO_ROTA_LM` é essencial para o alinhamento temporal das análises.
+- Ela é dependente da atualização do Ops Clock, que é feita por este arquivo (gerenciada pela equipe Flow):  
+[Ops Clock - Google Sheets](https://docs.google.com/spreadsheets/d/16n6QYXPFzHfpXAo6J-77ADY1k9mylIxZv7K5ca-hJfc)
+
+---
