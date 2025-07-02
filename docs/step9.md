@@ -1,4 +1,4 @@
-### Step 09 – Base Ciclo Budget
+### Step 09 - Base Ciclo Budget
 
 🔹 Step 09 – `LK_CICLO_BUDGET_CUSTOS`
 
@@ -13,6 +13,10 @@ Adaptar a base de ciclos operacionais para alinhar os valores com a nomenclatura
 **Tabela utilizada:**
 - `meli-bi-data.SBOX_CASECENTERMLB.CICLO_ROTA_LM`
 
+**Descrição:** Contém os ciclos operacionais atribuídos por rota, sendo referência para alinhamento com o planejamento financeiro.
+
+Esta tabela se conecta ao planejamento armazenado em `meli-bi-data.SBOX_MLB_FORECASTING.MLB_RTG_BUDGET_LM_TARGETS_2025`, onde **para 2025 foram definidos apenas dois ciclos operativos: `AM` e `PM`**. Por isso, a lógica do pipeline converte o ciclo `SD` para `PM`, garantindo consistência com os dados de budget, **sem necessidade de ajuste manual futuro, pois o pipeline já está alinhado com essa estrutura**.
+
 **Filtro aplicado:**
 - *Nenhum filtro foi aplicado neste step.*
 
@@ -20,11 +24,11 @@ Adaptar a base de ciclos operacionais para alinhar os valores com a nomenclatura
 
 📐 **Transformações e Seleções:**
 
-| *Coluna no output*    | *Descrição*                                                                 |
-| :---------------------| :-------------------------------------------------------------------------- |
-| `shp_lg_route_id`     | Identificador da rota logística                                             |
-| `CICLO_ROTA`          | Ciclo operacional bruto conforme registrado na base original                |
-| `CICLO_BUDGET`        | Ciclo ajustado para orçamentação. Ex: `'SD'` transformado em `'PM'`         |
+| **Coluna no Input** | **Coluna no Output** | **Descrição**                                                      |
+| :-----------------: | :------------------: | :----------------------------------------------------------------: |
+| `shp_lg_route_id`   | `shp_lg_route_id`    | Identificador da rota logística                                    |
+| `CICLO_OPS`         | `CICLO_ROTA`         | Ciclo operacional bruto conforme registrado na base original      |
+| `CICLO_BUDGET`      | `CICLO_BUDGET`       | Ciclo ajustado para orçamentação (ex: `'SD'` transformado em `'PM'`) |
 
 ---
 
@@ -38,19 +42,21 @@ Multiplicadores: *Não há aplicação de multiplicadores neste step.*
 
 📋 **Regras de Negócio Implícitas:**
 
-- Quando `CICLO_OPS = 'SD'`, é convertido para `'PM'`, refletindo a nomenclatura usada nas metas e budgets.
+- Quando `CICLO_OPS = 'SD'`, é convertido para `'PM'`, refletindo a nomenclatura usada em budget e metas.
 - Nos demais casos, `CICLO_OPS` é mantido como `CICLO_BUDGET`.
 
 ---
 
 🔍 **Considerações técnicas:**
 
-- A tabela `STG.LK_CICLO_BUDGET_CUSTOS` é criada com `CREATE OR REPLACE TABLE`, sobrescrevendo conteúdo anterior.
-- A base mantém a granularidade por `shp_lg_route_id`, com duas colunas que representam o ciclo original e o ciclo ajustado.
+- Criação realizada com `CREATE OR REPLACE TABLE`, sobrescrevendo a tabela `STG.LK_CICLO_BUDGET_CUSTOS`.
+- Granularidade por `shp_lg_route_id`, mantendo os campos de ciclo bruto e ciclo ajustado.
 
 ---
 
 ⚠️ **Pontos de atenção:**
 
-- Certifique-se de que todos os ciclos considerados no budget estejam refletidos corretamente na lógica de `CASE`.
-- Se novos ciclos forem introduzidos, essa lógica deverá ser revisada para garantir compatibilidade com o planejamento.
+- Importante que todos os ciclos utilizados no planejamento financeiro estejam refletidos corretamente na lógica de `CASE`.
+
+
+---
