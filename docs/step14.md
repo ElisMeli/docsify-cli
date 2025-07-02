@@ -1,10 +1,10 @@
-### Step 14 – Base Custo Paradas
+### Step 14 - Base Custo Paradas
 
 🔹 Step 14 – `LK_BASE_CUSTO_PARADAS_CUSTOS`
 
 ✅ **Objetivo:**
 
-Criar uma base com os custos associados a paradas do tipo `Visita`, por driver, período e unidade logística. O objetivo é mensurar o custo variável relacionado a esse tipo de operação, útil para cálculo de indicadores financeiros por parada ou rota.
+Criar uma base com os custos associados a paradas do tipo `Visita`, por driver, período e unidade logística, mensurando o custo variável relacionado a esse tipo de operação, útil para cálculo de indicadores financeiros por parada ou rota.
 
 ---
 
@@ -17,57 +17,62 @@ Criar uma base com os custos associados a paradas do tipo `Visita`, por driver, 
 - `meli-bi-data.WHOWNER.LK_SHP_COMPANIES` (`COMP`)
 - `meli-bi-data.WHOWNER.LK_SHP_LG_ROUTES` (`XPT`)
 
+**Descrição:** Tabelas de pré-faturamento, rotas e shipments utilizadas para capturar custos logísticos detalhados por driver e período.
+
 **Filtros aplicados:**
 - `inv.SIT_SITE_ID = 'MLB'`
 - `ROUT.SHP_LG_ROUTE_INIT_DATE BETWEEN '2025-01-01' AND '2025-12-31'`
 - `SHP_LG_STEP_TYPE IN ('middle_mile','last_mile','melione')`
-- `SHP_LG_PRE_INVOICE_DETAIL_DESCRIPTION` começa com `'Vis'`
+- Descrição de custo iniciando com `'Vis'`
 - Exclusão de descrições contendo `'INFO: LH'`
-- `SHP_LG_PRE_INVOICE_DETAIL_TYPE_OPERATION = '+'`
+- Tipo de operação `= '+'` (rotas executadas)
 
 ---
 
 📐 **Transformações e Seleções:**
 
-| *Coluna no output*         | *Descrição*                                                                      |
-| :--------------------------| :---------------------------------------------------------------------------------|
-| `SHP_COMPANY_ID`           | Identificador da empresa contratada                                              |
-| `SHP_COMPANY_NAME`         | Nome da empresa                                                                  |
-| `SHP_LG_PRE_INVOICE_HEADER_PERIOD_NAME` | Período de referência do custo                                       |
-| `DRIVER`                   | Identificador do motorista responsável pela rota                                 |
-| `SHP_LG_FACILITY_ID`       | Unidade logística vinculada à rota                                               |
-| `COST`                     | Custo total atribuído à visita (`PRE_INVOICE_DETAIL_COST`)                        |
-| `QTY_ROUTES`               | Quantidade de rotas distintas associadas ao driver no período                     |
-| `VARIABLE`                 | Custo médio por rota (`COST / QTY_ROUTES`)                                       |
+| **Coluna no Input**                   | **Coluna no Output**                | **Descrição**                                                     |
+| :------------------------------------:| :----------------------------------:| :---------------------------------------------------------------- |
+| `ROUT.SHP_COMPANY_ID`                 | `SHP_COMPANY_ID`                    | Identificador da empresa contratada                               |
+| `COMP.SHP_COMPANY_NAME`               | `SHP_COMPANY_NAME`                  | Nome da empresa contratada                                        |
+| `ROUT.SHP_LG_PRE_INVOICE_HEADER_PERIOD_NAME` | `PERIODO`                   | Período de referência do custo                                    |
+| `SHP.SHP_LG_DRIVER_ID`                | `DRIVER`                            | Identificador do motorista responsável                            |
+| `SHP.SHP_LG_FACILITY_ID`              | `SHP_FACILITY_ID`                   | Unidade logística vinculada à rota                                |
+| `INV.SHP_LG_PRE_INVOICE_DETAIL_COST`  | `COST`                              | Custo total atribuído à visita                                    |
+| Calculado                             | `QTY_ROUTES`                        | Quantidade de rotas distintas associadas ao driver no período     |
+| Calculado                             | `VARIABLE`                          | Custo médio por rota (`COST / QTY_ROUTES`)                        |
 
 ---
 
 🔁 **Joins e Multiplicadores:**
 
-Joins: *Executados entre tabelas de detalhe de fatura, rotas, empresas, shipments e rotas logísticas para coletar as dimensões necessárias.*
+Joins: *Executados entre tabelas de pré-faturamento, rotas, shipments, empresas e rotas logísticas para coletar todas as dimensões necessárias.*
 
-Multiplicadores: *Não há aplicação explícita de multiplicadores neste step, mas a divisão por quantidade de rotas resulta em um custo médio.*
+Multiplicadores: *Não há aplicação explícita, mas a métrica `VARIABLE` resulta da divisão de custo total pelo número de rotas.*
 
 ---
 
 📋 **Regras de Negócio Implícitas:**
 
-- Apenas custos com descrição iniciando em `'Vis'` são considerados como custo de paradas.
-- Custos do tipo `'INFO: LH'` são descartados, por não representarem custo direto de rota.
-- A operação considerada é somente do tipo `+`, que representa rotas executadas.
+- Apenas custos com descrição iniciando em `'Vis'` são considerados como custos de parada.
+- Custos contendo `'INFO: LH'` são desconsiderados por não representarem paradas.
+- Apenas operações executadas (`'+'`) são consideradas.
+- Métrica `VARIABLE` calcula o custo médio por rota.
 
 ---
 
 🔍 **Considerações técnicas:**
 
-- A granularidade é por `driver`, `empresa`, `período` e `facility`.
-- A tabela `STG.LK_BASE_CUSTO_PARADAS_CUSTOS` é criada com `CREATE OR REPLACE TABLE`, sobrescrevendo a anterior.
-- A métrica `VARIABLE` representa o custo médio por rota com base nas visitas identificadas.
+- Criação com `CREATE OR REPLACE TABLE`, sobrescrevendo `STG.LK_BASE_CUSTO_PARADAS_CUSTOS`.
+- Granularidade: driver, empresa, período e unidade logística.
+- Indicador `VARIABLE` facilita comparações entre custos e rotas realizadas.
 
 ---
 
 ⚠️ **Pontos de atenção:**
 
-- Drivers com múltiplas rotas no mesmo período terão o custo diluído na média.
-- A lógica depende fortemente da descrição iniciar com `'Vis'`; inconsistências no preenchimento podem afetar a análise.
-- Custos muito baixos ou altos devem ser validados individualmente, especialmente se a contagem de rotas for pequena.
+- Drivers com múltiplas rotas no mesmo período terão custos diluídos na média.
+- Descrições inconsistentes (não iniciando com `'Vis'`) podem causar exclusões.
+- Custos unitários muito baixos ou altos devem ser analisados caso a quantidade de rotas seja baixa.
+
+---
