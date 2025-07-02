@@ -1,7 +1,7 @@
 - [Introdução](intro.md)
 - [Visão Geral](overview.md)
 
-- **Steps – Performance de Custos LM**
+- **Documentação Técnica – Etapas**
   - [01 - Base Cidade Origem](step1.md)
   - [02 - Base Loyalty Flat](step2.md)
   - [03 - Base Regionais](step3.md)
